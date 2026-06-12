@@ -2,7 +2,8 @@
 
 Repo: https://github.com/Suhono-BranchlessPay/branchlesspay-audit-shield-Freshbook  
 Branch: **`dev` only**  
-Scope: verify-page field mapping + display polish (not webhook/collection)
+Scope: verify-page field mapping + display polish (not webhook/collection)  
+Status: **✅ COMPLETE** — BP production sign-off (verify page + print + date fallback)
 
 Prerequisite: **M1 + M2 complete** — see [MILESTONE_FRESHBOOKS.md](MILESTONE_FRESHBOOKS.md)
 
@@ -18,8 +19,8 @@ Prerequisite: **M1 + M2 complete** — see [MILESTONE_FRESHBOOKS.md](MILESTONE_F
 | Business + transaction section mappers | ✅ |
 | Integration example (`VerifyPageIntegration.example.tsx`) | ✅ |
 | Mapping doc | ✅ [docs/M3_FIELD_MAPPING.md](docs/M3_FIELD_MAPPING.md) |
-| Production `VerifyPage.tsx` from BP | ⏳ Pending |
-| Screenshot: verify page | ⏳ After BP merges |
+| Production `VerifyPage.tsx` merged (BP main engine) | ✅ |
+| Verify page — all fields | ✅ BP sign-off |
 
 ---
 
@@ -32,7 +33,8 @@ Prerequisite: **M1 + M2 complete** — see [MILESTONE_FRESHBOOKS.md](MILESTONE_F
 | PDF evidence field builder | ✅ |
 | Verification instructions template | ✅ |
 | Evidence guide | ✅ [docs/M4_EVIDENCE_GUIDE.md](docs/M4_EVIDENCE_GUIDE.md) |
-| 4 screenshots (invoice/payment/PDF/edge) | ⏳ Pending verify UI |
+| Print layout (1 page A4) | ✅ BP sign-off |
+| `create_date` fallback on verify page | ✅ BP sign-off |
 | Test results updated | ✅ [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md) |
 
 ---
@@ -43,7 +45,7 @@ Prerequisite: **M1 + M2 complete** — see [MILESTONE_FRESHBOOKS.md](MILESTONE_F
 |-------|-----------|
 | `metadata.account_id` | webhook `account_id` + `.env` fallback |
 | `metadata.business_address` | document address parts + `FRESHBOOKS_BUSINESS_ADDRESS` |
-| `voucher_date` | top-level + metadata from FreshBooks document date |
+| `voucher_date` | top-level + metadata from FreshBooks document date (`create_date` fallback) |
 | `erp_system` | `"FreshBooks"` top-level + metadata |
 
 File: `src/freshbooks_bp_collector/normalizer.py`
@@ -64,13 +66,23 @@ npm test
 
 ---
 
+## BP production sign-off
+
+| Check | Status |
+|-------|--------|
+| Webhook live | ✅ |
+| HMAC verified | ✅ |
+| 4 events anchoring | ✅ |
+| Amount $650 enriched | ✅ |
+| OAuth auto-refresh | ✅ |
+| Verify page — all fields | ✅ |
+| Print — 1 page A4 | ✅ |
+| Date — `create_date` fallback | ✅ |
+
+---
+
 ## Submission to BP
 
-Email suhono@branchlesspay.com:
-
-1. GitHub `dev` branch link
-2. Summary: mapping module + collector enrichment
-3. Blocker: need production `VerifyPage.tsx` to wire UI
-4. Screenshots when verify page updated
+Submitted to suhono@branchlesspay.com — **reviewed and merged to BP main engine.**
 
 Contact: suhono@branchlesspay.com

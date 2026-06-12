@@ -1,7 +1,8 @@
-# BP Platform — FreshBooks Webhook (LIVE)
+# BP Platform — FreshBooks (LIVE — full sign-off)
 
 **Production endpoint:** `POST https://branchlesspay.com/api/v1/webhook/freshbooks`  
-**BP deploy:** commit `531bc85` (pushed)  
+**BP webhook deploy:** commit `531bc85`  
+**M3+M4 verify mapping:** merged to BP main engine (repo commit `5913477`)  
 **E2E verified:** June 2026 — invoice `0000001`, **$650.00 USD**, anchored on Monad
 
 ---
@@ -10,12 +11,14 @@
 
 | Feature | Status |
 |---------|--------|
-| Webhook receiver | ✅ |
-| HMAC verification (`X-FreshBooks-Hmac-SHA256`) | ✅ |
-| 4 events (create / update / payment / expense) | ✅ |
-| Amount enrichment ($0 → correct amount e.g. $650) | ✅ |
+| Webhook receiver | ✅ live |
+| HMAC verification (`X-FreshBooks-Hmac-SHA256`) | ✅ verified |
+| 4 events (create / update / payment / expense) | ✅ anchoring |
+| Amount enrichment ($0 → $650) | ✅ |
 | OAuth auto-refresh | ✅ |
-| Verify page shows correct amount | ✅ |
+| Verify page — all fields | ✅ |
+| Print — 1 page A4 | ✅ |
+| Date — `create_date` fallback | ✅ |
 | Anchored on Monad | ✅ |
 | HTTP **202** on success | ✅ |
 | Bad HMAC → **401** | ✅ |
@@ -43,10 +46,10 @@ Callbacks registered (account `p7Q665`): `833466`–`833469`
 FreshBooks invoice/payment/expense
   → POST branchlesspay.com/api/v1/webhook/freshbooks
   → HMAC verify + fetch/enrich amount (OAuth)
-  → anchor → verify page → Monad
+  → anchor → verify page (all fields) → print A4 → Monad
 ```
 
-Local collector repo (`branchlesspay-audit-shield-Freshbook`) documents M1+M2 reference implementation.
+Reference collector repo: `branchlesspay-audit-shield-Freshbook` (M1–M4)
 
 ---
 
@@ -57,6 +60,7 @@ Local collector repo (`branchlesspay-audit-shield-Freshbook`) documents M1+M2 re
 | Test invoice | `0000001` |
 | Amount | $650.00 USD |
 | OAuth | `branchlesspay.com/connect/freshbooks/callback` |
-| Verify page | Amount correct, Monad TX visible |
+| Verify page | All fields + print 1× A4 |
+| Transaction date | `create_date` fallback |
 
 Contact: suhono@branchlesspay.com

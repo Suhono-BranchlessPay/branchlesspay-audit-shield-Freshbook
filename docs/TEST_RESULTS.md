@@ -1,6 +1,6 @@
 # Test Results — FreshBooks BP Collector & Display
 
-Branch: `dev` · Local tests + production E2E
+Branch: `dev` · Local tests + production E2E · **BP sign-off complete**
 
 ---
 
@@ -41,23 +41,33 @@ npm test
 
 ---
 
-## Production E2E (BP platform — commit `531bc85`)
+## Production E2E — BP sign-off
+
+| Check | Result |
+|-------|--------|
+| Webhook live | ✅ |
+| HMAC verified | ✅ |
+| 4 events anchoring | ✅ |
+| Amount $650 enriched | ✅ |
+| OAuth auto-refresh | ✅ |
+| Verify page — all fields | ✅ |
+| Print — 1 page A4 | ✅ |
+| Date — `create_date` fallback | ✅ |
 
 | Step | Result | Evidence |
 |------|--------|----------|
 | OAuth connect | ✅ | `branchlesspay.com/connect/freshbooks/callback` |
-| Webhooks 833466–833469 | ✅ | Registered to `/api/v1/webhook/freshbooks` |
+| Webhooks 833466–833469 | ✅ | `/api/v1/webhook/freshbooks` |
 | Test invoice FreshBooks | ✅ | `0000001` — **$650.00 USD** |
-| Amount on verify page | ✅ | Was $0 → enriched to $650 |
 | Monad anchor | ✅ | VERIFIED on verify page |
-| HMAC + 4 events | ✅ | BP production |
+| M3+M4 verify UI | ✅ | Merged to BP main engine |
 
-**Pending after M3 UI merge:** re-anchor or open existing verify URL to confirm new Business/Transaction fields render on production `VerifyPage.tsx`.
+BP deploy (webhook): commit `531bc85` · Collector mapping: commit `5913477`
 
 ---
 
 ## Sign-off
 
-**M1 + M2 complete.** **M3 + M4 mapping module + collector enrichment complete** (awaiting BP `VerifyPage.tsx` for live UI screenshots).
+**M1 + M2 + M3 + M4 complete.** FreshBooks integration live on BranchlessPay production.
 
 Contact: suhono@branchlesspay.com

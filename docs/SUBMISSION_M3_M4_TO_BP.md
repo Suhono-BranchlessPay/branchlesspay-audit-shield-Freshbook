@@ -48,6 +48,6 @@ After merge, please provide a FreshBooks test `anchor_id` (or confirm existing i
 
 ## Request
 
-Please review `dev` and merge into BP main engine when approved.
+**Status:** Reviewed and merged to BP main engine. Production sign-off received.
 
 Contact: suhono@branchlesspay.com
