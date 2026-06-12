@@ -1,0 +1,4 @@
+BranchlessPay Audit Shield — FreshBooks Collector
+Copyright (c) 2026 Branchlesspay, Inc.
+
+Licensed under OPL-1. See BranchlessPay commercial terms.

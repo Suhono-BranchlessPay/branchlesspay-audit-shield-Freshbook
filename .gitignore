@@ -1,0 +1,12 @@
+.env
+.env.local
+*.pyc
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+data/failed_queue/*.json
+!data/failed_queue/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
