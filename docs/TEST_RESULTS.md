@@ -27,28 +27,14 @@ pytest tests/ -v
 
 ---
 
-## Live integration (pending credentials)
+## Live integration
 
-| Step | Result | Evidence |
-|------|--------|----------|
-| FreshBooks webhook fires | ⏳ | Needs trial + ngrok |
-| Signature verified | ⏳ | |
-| Full invoice fetched | ⏳ | |
-| BP POST HTTP 202 | ⏳ | |
-| Verify page shows data | ⏳ | |
+| Step | Result | Notes |
+|------|--------|-------|
+| BP platform webhook shipped | ✅ | `POST /api/v1/webhook/freshbooks` |
+| Local unit tests | ✅ | 6 passed, Python 3.12.10 |
+| FreshBooks trial E2E via ngrok | ⏳ | Optional — production URL preferred |
 
-When complete, add:
-
-- Screenshot: FreshBooks webhook config
-- Screenshot: server log / BP 202 response
-- Verify URL: `https://branchlesspay.com/verify/[anchor_id]`
-
----
-
-## Blockers
-
-1. `BP_LICENSE_KEY` — await WhatsApp from BP (use `.env`, not committed)
-2. FreshBooks OAuth — requires developer app + trial account
-3. Public webhook URL — ngrok or BP staging host
+See [BP_PLATFORM_SHIPPED.md](BP_PLATFORM_SHIPPED.md) for production checklist.
 
 Contact: suhono@branchlesspay.com

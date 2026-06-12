@@ -53,13 +53,28 @@ def test_webhook_pipeline(mock_post, mock_fetch):
         },
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 202
     body = response.get_json()
     assert body["ok"] is True
     assert body["anchor_id"] == "test-anchor-id"
     assert "verify/" in body["verify_url"]
     mock_fetch.assert_called_once()
     mock_post.assert_called_once()
+
+
+def test_verification_ping_returns_200():
+    app = create_app(_settings(skip_signature_verify=True))
+    client = app.test_client()
+    response = client.post("/webhook/freshbooks", data={"verifier": "abc123"})
+    assert response.status_code == 200
+    assert response.get_json()["verification"] == "ping"
+
+
+def test_get_verification_ping_returns_200():
+    app = create_app(_settings())
+    client = app.test_client()
+    response = client.get("/webhook/freshbooks")
+    assert response.status_code == 200
 
 
 def test_invalid_signature_returns_401():

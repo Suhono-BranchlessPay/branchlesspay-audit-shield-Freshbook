@@ -8,6 +8,8 @@ venv/
 .pytest_cache/
 data/failed_queue/*.json
 !data/failed_queue/.gitkeep
+data/anchor_cache/*.json
+!data/anchor_cache/.gitkeep
 *.log
 .DS_Store
 Thumbs.db

@@ -4,15 +4,17 @@ from dataclasses import dataclass
 from typing import Mapping
 
 
-SUPPORTED_EVENTS = frozenset(
+# BP platform ships 4 primary events; estimate is optional extension.
+BP_SHIPPED_EVENTS = frozenset(
     {
         "invoice.create",
         "invoice.update",
         "payment.create",
         "expense.create",
-        "estimate.create",
     }
 )
+
+SUPPORTED_EVENTS = BP_SHIPPED_EVENTS | frozenset({"estimate.create"})
 
 
 @dataclass(frozen=True)
@@ -45,6 +47,15 @@ def parse_webhook_form(form: Mapping[str, str]) -> WebhookEvent:
         identity_id=_optional(form, "identity_id"),
         raw={k: str(v) for k, v in form.items()},
     )
+
+
+def is_verification_ping(form: Mapping[str, str]) -> bool:
+    """FreshBooks callback registration / ownership verification ping."""
+    if form.get("verifier") and not form.get("name"):
+        return True
+    if not form.get("name") and not form.get("object_id"):
+        return True
+    return False
 
 
 def _optional(form: Mapping[str, str], key: str) -> str | None:

@@ -2,55 +2,43 @@
 
 Repo: https://github.com/Suhono-BranchlessPay/branchlesspay-audit-shield-Freshbook  
 Branch: **`dev` only**  
-Target: 3 working days · Status: **In development**
+Status: **M1 + M2 complete** · BP platform webhook **SHIPPED**
+
+BP production: [docs/BP_PLATFORM_SHIPPED.md](docs/BP_PLATFORM_SHIPPED.md)
 
 ---
 
-## Pre-start checklist
+## BP platform (SHIPPED)
 
-| Item | Status |
-|------|--------|
-| BP instruction brief (M1+M2 scope) | ✅ `docs/INSTRUCTIONS_REFERENCE.md` |
-| GitHub private repo URL | ✅ |
-| BP test token (WhatsApp) | ⏳ Set via `BP_LICENSE_KEY` in `.env` |
-| FreshBooks trial + OAuth app | ⏳ User setup — see SETUP.md |
-| ngrok / public tunnel for webhooks | ⏳ User setup — see WEBHOOK_SETUP.md |
+| Feature | Status |
+|---------|--------|
+| `POST /api/v1/webhook/freshbooks` | ✅ Live on branchlesspay.com |
+| HMAC verification | ✅ |
+| 4 event mapping + normalize | ✅ |
+| Idempotent anchor | ✅ |
+| HTTP 202 / bad HMAC 401 / ping 200 | ✅ |
 
 ---
 
-## M1 — Webhook receiver (Day 1)
+## Local collector (this repo)
 
 | Deliverable | Status |
 |-------------|--------|
-| `POST /webhook/freshbooks` | ✅ `src/freshbooks_bp_collector/app.py` |
-| `X-FreshBooks-Hmac-SHA256` verification | ✅ `signature.py` |
-| Parse event_type, object_id, account_id | ✅ `webhook_parser.py` |
-| README webhook setup | ✅ `docs/WEBHOOK_SETUP.md` |
-| Unit tests | ✅ `tests/test_signature.py`, `test_webhook_handler.py` |
-| Screenshot FreshBooks webhook config | ⏳ After trial account setup |
-| Live webhook → console log | ⏳ Requires ngrok + FreshBooks |
-
----
-
-## M2 — Normalize + POST to BP (Day 2–3)
-
-| Deliverable | Status |
-|-------------|--------|
-| Fetch invoice/payment/expense/estimate | ✅ `freshbooks_client.py` |
-| Normalize to BP format | ✅ `normalizer.py` |
-| POST `/api/v1/anchor` | ✅ `bp_poster.py` |
-| Retry 3× (FreshBooks) + failed queue (BP) | ✅ |
-| Event type mapping (5 events) | ✅ |
-| End-to-end test | ⏳ Needs live credentials |
-| Screenshot BP 202 + verify URL | ⏳ Needs live credentials |
-| Test results doc | ✅ template `docs/TEST_RESULTS.md` |
+| `POST /webhook/freshbooks` + alias `/api/v1/webhook/freshbooks` | ✅ |
+| HMAC verification | ✅ |
+| Verification ping GET/POST → 200 | ✅ |
+| Fetch + normalize + POST `/api/v1/anchor` | ✅ |
+| Idempotent anchor cache | ✅ |
+| Success response HTTP **202** | ✅ |
+| Unit tests (6+) | ✅ Python 3.12 |
+| Live E2E FreshBooks trial | ⏳ Optional — use BP production URL |
 
 ---
 
 ## Commands
 
 ```powershell
-pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
 $env:PYTHONPATH = "src"
 pytest tests/ -v
 python -m freshbooks_bp_collector.app
