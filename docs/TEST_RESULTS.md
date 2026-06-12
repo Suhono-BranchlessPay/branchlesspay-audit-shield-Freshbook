@@ -8,13 +8,22 @@ Branch: `dev`
 
 ## Automated tests
 
+Verified **2026-06-11** on Windows · Python **3.12.10** · venv `.venv`
+
 | Test | Result | Notes |
 |------|--------|-------|
 | `tests/test_signature.py` | PASS | HMAC matches FreshBooks example |
 | `tests/test_normalizer.py` | PASS | Invoice + payment mapping |
 | `tests/test_webhook_handler.py` | PASS | Mocked fetch + BP post |
 
-Run: `pytest tests/ -v`
+Run:
+
+```powershell
+cd Freshbook
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONPATH = "src"
+pytest tests/ -v
+```
 
 ---
 

@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+.pytest_cache/
 data/failed_queue/*.json
 !data/failed_queue/.gitkeep
 *.log

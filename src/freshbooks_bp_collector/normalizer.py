@@ -117,7 +117,7 @@ def _extract_contact_name(document: dict[str, Any]) -> str:
             return str(value)
     first = str(document.get("fname") or "").strip()
     last = str(document.get("lname") or "").strip()
-    full = "%s %s" % (first, last).strip()
+    full = ("%s %s" % (first, last)).strip()
     return full or "Unknown"
 
 
