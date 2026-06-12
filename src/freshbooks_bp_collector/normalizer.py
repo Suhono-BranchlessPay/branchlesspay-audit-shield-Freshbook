@@ -19,6 +19,8 @@ DOCUMENT_TYPE_MAP = {
     "estimate.create": "Estimate",
 }
 
+ERP_DISPLAY_LABEL = "FreshBooks"
+
 
 def map_event_type(freshbooks_event: str) -> str:
     mapped = EVENT_TYPE_MAP.get(freshbooks_event)
@@ -31,7 +33,9 @@ def normalize_to_bp_payload(
     freshbooks_event: str,
     document: dict[str, Any],
     *,
+    account_id: str = "",
     company_name: str = "",
+    business_address: str = "",
 ) -> dict[str, Any]:
     event_type = map_event_type(freshbooks_event)
     document_type = DOCUMENT_TYPE_MAP[freshbooks_event]
@@ -40,17 +44,24 @@ def normalize_to_bp_payload(
     contact_name = _extract_contact_name(document)
     status = str(document.get("status") or document.get("vis_state") or "unknown")
     business = company_name or _extract_company_name(document)
+    address = business_address or _extract_business_address(document)
+    voucher_date = _extract_voucher_date(document, freshbooks_event)
     timestamp = _extract_timestamp(document)
+    resolved_account_id = account_id or str(document.get("account_id") or "")
 
     metadata = {
         "erp": "freshbooks",
+        "erp_system": ERP_DISPLAY_LABEL,
         "company_name": business,
         "business_name": business,
+        "business_address": address,
+        "account_id": resolved_account_id,
         "document_type": document_type,
         "contact_name": contact_name,
         "status": status,
         "freshbooks_id": str(document.get("id") or ""),
         "freshbooks_event": freshbooks_event,
+        "voucher_date": voucher_date,
     }
 
     if freshbooks_event.startswith("invoice."):
@@ -63,14 +74,25 @@ def normalize_to_bp_payload(
     elif freshbooks_event.startswith("estimate."):
         metadata["estimate_number"] = reference_id
 
-    return {
+    payload: dict[str, Any] = {
         "event_type": event_type,
         "reference_id": reference_id,
         "amount": amount,
         "currency": currency,
+        "voucher_date": voucher_date,
         "timestamp": timestamp,
         "metadata": metadata,
     }
+
+    if business:
+        payload["business_name"] = business
+    if address:
+        payload["business_address"] = address
+    if resolved_account_id:
+        payload["account_id"] = resolved_account_id
+    payload["erp_system"] = ERP_DISPLAY_LABEL
+
+    return payload
 
 
 def _extract_amount(document: dict[str, Any]) -> tuple[float, str]:
@@ -129,11 +151,35 @@ def _extract_company_name(document: dict[str, Any]) -> str:
     return "FreshBooks Business"
 
 
+def _extract_business_address(document: dict[str, Any]) -> str:
+    direct = document.get("business_address") or document.get("address")
+    if direct:
+        return str(direct).strip()
+
+    parts: list[str] = []
+    for key in ("street", "street2", "city", "province", "code", "country"):
+        value = document.get(key)
+        if value:
+            parts.append(str(value).strip())
+    return ", ".join(parts)
+
+
+def _extract_voucher_date(document: dict[str, Any], event_type: str) -> str:
+    keys = ("create_date", "date", "updated", "created_at")
+    if event_type.startswith("payment."):
+        keys = ("date", "create_date", "updated", "created_at")
+    for key in keys:
+        value = document.get(key)
+        if value:
+            return _date_only(str(value))
+    return ""
+
+
 def _extract_due_date(document: dict[str, Any]) -> str:
     for key in ("due_date", "date", "create_date", "updated"):
         value = document.get(key)
         if value:
-            return str(value)
+            return _date_only(str(value))
     return ""
 
 
@@ -143,5 +189,9 @@ def _extract_timestamp(document: dict[str, Any]) -> str:
         if value:
             if "T" in str(value):
                 return str(value).replace(" ", "T")
-            return "%sT00:00:00Z" % value
+            return "%sT00:00:00Z" % _date_only(str(value))
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _date_only(value: str) -> str:
+    return value.split("T")[0].split(" ")[0]

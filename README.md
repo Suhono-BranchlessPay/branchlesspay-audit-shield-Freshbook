@@ -4,7 +4,7 @@ Immutable audit trail for FreshBooks invoices, payments, expenses, and estimates
 
 | Item | Value |
 |------|-------|
-| Scope | **M1 + M2** — webhook receiver + normalize + BP anchor |
+| Scope | **M1 + M2** webhook/collector · **M3 + M4** verify display mapping |
 | Production webhook | `POST https://branchlesspay.com/api/v1/webhook/freshbooks` |
 | Local dev | `POST http://127.0.0.1:8080/webhook/freshbooks` |
 | Branch | **`dev` only** (private, not published) |
@@ -39,6 +39,7 @@ Health check: http://127.0.0.1:8080/health
 
 Full guide: [docs/SETUP.md](docs/SETUP.md)  
 Webhook setup: [docs/WEBHOOK_SETUP.md](docs/WEBHOOK_SETUP.md)  
+**M3+M4 display:** [MILESTONE_M3_M4.md](MILESTONE_M3_M4.md) · [display/README.md](display/README.md)  
 **Submit to BP:** [docs/SUBMISSION_TO_BP.md](docs/SUBMISSION_TO_BP.md)  
 **OAuth:** [docs/OAUTH.md](docs/OAUTH.md)
 
@@ -49,6 +50,8 @@ Webhook setup: [docs/WEBHOOK_SETUP.md](docs/WEBHOOK_SETUP.md)
 ```powershell
 $env:PYTHONPATH = "src"
 pytest tests/ -v
+cd display
+npm test
 ```
 
 Or: `powershell -ExecutionPolicy Bypass -File scripts\run_tests.ps1`
@@ -59,6 +62,7 @@ Or: `powershell -ExecutionPolicy Bypass -File scripts\run_tests.ps1`
 
 ```
 Freshbook/
+├── display/                   # M3+M4 verify-page mapping (TypeScript)
 ├── src/freshbooks_bp_collector/
 │   ├── app.py                 # Flask webhook (M1 + M2)
 │   ├── signature.py           # HMAC verification (M1)
@@ -68,7 +72,8 @@ Freshbook/
 ├── tests/
 ├── docs/
 ├── data/failed_queue/
-└── MILESTONE_FRESHBOOKS.md
+├── MILESTONE_FRESHBOOKS.md
+└── MILESTONE_M3_M4.md
 ```
 
 ---

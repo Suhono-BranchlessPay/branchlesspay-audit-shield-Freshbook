@@ -17,6 +17,8 @@ class Settings:
     freshbooks_access_token: str
     freshbooks_refresh_token: str
     freshbooks_account_id: str
+    freshbooks_business_name: str
+    freshbooks_business_address: str
     freshbooks_webhook_verifier: str
     host: str
     port: int
@@ -35,6 +37,12 @@ def get_settings() -> Settings:
         freshbooks_access_token=os.getenv("FRESHBOOKS_ACCESS_TOKEN", "").strip(),
         freshbooks_refresh_token=os.getenv("FRESHBOOKS_REFRESH_TOKEN", "").strip(),
         freshbooks_account_id=os.getenv("FRESHBOOKS_ACCOUNT_ID", "").strip(),
+        freshbooks_business_name=os.getenv(
+            "FRESHBOOKS_BUSINESS_NAME", ""
+        ).strip(),
+        freshbooks_business_address=os.getenv(
+            "FRESHBOOKS_BUSINESS_ADDRESS", ""
+        ).strip(),
         freshbooks_webhook_verifier=os.getenv(
             "FRESHBOOKS_WEBHOOK_VERIFIER", ""
         ).strip(),

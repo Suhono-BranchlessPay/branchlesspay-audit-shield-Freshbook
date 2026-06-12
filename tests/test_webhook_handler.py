@@ -13,6 +13,8 @@ def _settings(**overrides):
         freshbooks_access_token="access",
         freshbooks_refresh_token="refresh",
         freshbooks_account_id="K1pdgJ",
+        freshbooks_business_name="Acme LLC",
+        freshbooks_business_address="123 Main St, Austin, TX 78701",
         freshbooks_webhook_verifier="test-verifier",
         host="127.0.0.1",
         port=8080,
@@ -23,9 +25,11 @@ def _settings(**overrides):
     return Settings(**base)
 
 
+@patch("freshbooks_bp_collector.app.AnchorIdempotencyStore")
 @patch("freshbooks_bp_collector.app.FreshBooksClient.fetch_document")
 @patch("freshbooks_bp_collector.app.BPPoster.post_anchor")
-def test_webhook_pipeline(mock_post, mock_fetch):
+def test_webhook_pipeline(mock_post, mock_fetch, mock_idem_cls):
+    mock_idem_cls.return_value.get.return_value = None
     mock_fetch.return_value = {
         "id": 1234567,
         "invoice_number": "0000001",
@@ -59,6 +63,10 @@ def test_webhook_pipeline(mock_post, mock_fetch):
     assert body["anchor_id"] == "test-anchor-id"
     assert "verify/" in body["verify_url"]
     mock_fetch.assert_called_once()
+    posted_payload = mock_post.call_args[0][0]
+    assert posted_payload["voucher_date"] == "2026-06-11"
+    assert posted_payload["metadata"]["account_id"] == "K1pdgJ"
+    assert posted_payload["metadata"]["business_address"] == "123 Main St, Austin, TX 78701"
     mock_post.assert_called_once()
 
 

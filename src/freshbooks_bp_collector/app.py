@@ -111,7 +111,13 @@ def _handle_webhook(req: Request, settings) -> tuple[Any, int]:
         _logger.exception("FreshBooks fetch failed: %s", exc)
         return jsonify({"ok": False, "error": "freshbooks fetch failed"}), 502
 
-    bp_payload = normalize_to_bp_payload(event.event_type, document)
+    bp_payload = normalize_to_bp_payload(
+        event.event_type,
+        document,
+        account_id=event.account_id or settings.freshbooks_account_id,
+        company_name=settings.freshbooks_business_name,
+        business_address=settings.freshbooks_business_address,
+    )
     poster = BPPoster(
         license_key=settings.bp_license_key,
         api_url=settings.bp_api_url,
