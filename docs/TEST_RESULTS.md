@@ -1,40 +1,36 @@
 # Test Results — FreshBooks BP Collector
 
-Date: 2026-06-11  
-Environment: local Windows · Python 3.x  
-Branch: `dev`
+Branch: `dev` · Local tests + production E2E
 
 ---
 
-## Automated tests
+## Automated tests (local)
 
-Verified **2026-06-11** on Windows · Python **3.12.10** · venv `.venv`
+Verified on Windows · Python **3.12.10**
 
-| Test | Result | Notes |
-|------|--------|-------|
-| `tests/test_signature.py` | PASS | HMAC matches FreshBooks example |
-| `tests/test_normalizer.py` | PASS | Invoice + payment mapping |
-| `tests/test_webhook_handler.py` | PASS | Mocked fetch + BP post |
-
-Run:
-
-```powershell
-cd Freshbook
-.\.venv\Scripts\Activate.ps1
-$env:PYTHONPATH = "src"
-pytest tests/ -v
-```
+| Test | Result |
+|------|--------|
+| `tests/test_signature.py` | PASS |
+| `tests/test_normalizer.py` | PASS |
+| `tests/test_webhook_handler.py` | PASS (8 tests total) |
 
 ---
 
-## Live integration
+## Production E2E (BP platform — commit `531bc85`)
 
-| Step | Result | Notes |
-|------|--------|-------|
-| BP platform webhook shipped | ✅ | `POST /api/v1/webhook/freshbooks` |
-| Local unit tests | ✅ | 6 passed, Python 3.12.10 |
-| FreshBooks trial E2E via ngrok | ⏳ | Optional — production URL preferred |
+| Step | Result | Evidence |
+|------|--------|----------|
+| OAuth connect | ✅ | `branchlesspay.com/connect/freshbooks/callback` |
+| Webhooks 833466–833469 | ✅ | Registered to `/api/v1/webhook/freshbooks` |
+| Test invoice FreshBooks | ✅ | `0000001` — **$650.00 USD** |
+| Amount on verify page | ✅ | Was $0 → enriched to $650 |
+| Monad anchor | ✅ | VERIFIED on verify page |
+| HMAC + 4 events | ✅ | BP production |
 
-See [BP_PLATFORM_SHIPPED.md](BP_PLATFORM_SHIPPED.md) for production checklist.
+---
+
+## Sign-off
+
+**M1 + M2 complete.** FreshBooks integration live on BranchlessPay production.
 
 Contact: suhono@branchlesspay.com

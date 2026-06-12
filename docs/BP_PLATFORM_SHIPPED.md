@@ -1,22 +1,26 @@
-# BP Platform — FreshBooks Webhook (SHIPPED)
+# BP Platform — FreshBooks Webhook (LIVE)
 
-**Date:** June 11, 2026  
-**Production endpoint:** `POST https://branchlesspay.com/api/v1/webhook/freshbooks`
+**Production endpoint:** `POST https://branchlesspay.com/api/v1/webhook/freshbooks`  
+**BP deploy:** commit `531bc85` (pushed)  
+**E2E verified:** June 2026 — invoice `0000001`, **$650.00 USD**, anchored on Monad
 
 ---
 
-## Shipped checklist
+## Production checklist (verified)
 
 | Feature | Status |
 |---------|--------|
-| `POST /api/v1/webhook/freshbooks` | ✅ |
+| Webhook receiver | ✅ |
 | HMAC verification (`X-FreshBooks-Hmac-SHA256`) | ✅ |
-| Event mapping (4 events) | ✅ |
-| Normalize to BP anchor format | ✅ |
-| Idempotent anchor | ✅ |
+| 4 events (create / update / payment / expense) | ✅ |
+| Amount enrichment ($0 → correct amount e.g. $650) | ✅ |
+| OAuth auto-refresh | ✅ |
+| Verify page shows correct amount | ✅ |
+| Anchored on Monad | ✅ |
 | HTTP **202** on success | ✅ |
 | Bad HMAC → **401** | ✅ |
 | Verification ping → **200** | ✅ |
+| Idempotent anchor | ✅ |
 
 ---
 
@@ -29,28 +33,30 @@
 | `payment.create` | `freshbooks_payment_received` |
 | `expense.create` | `freshbooks_expense_recorded` |
 
-Optional extension in local collector: `estimate.create` → `freshbooks_estimate_created`
+Callbacks registered (account `p7Q665`): `833466`–`833469`
 
 ---
 
 ## Architecture
 
 ```
-Production (BP platform):
-  FreshBooks → branchlesspay.com/api/v1/webhook/freshbooks → anchor + verify
-
-Local dev (this repo):
-  FreshBooks → ngrok → localhost:8080/webhook/freshbooks
-            → fetch FreshBooks API → normalize → POST /api/v1/anchor
+FreshBooks invoice/payment/expense
+  → POST branchlesspay.com/api/v1/webhook/freshbooks
+  → HMAC verify + fetch/enrich amount (OAuth)
+  → anchor → verify page → Monad
 ```
 
-Local collector mirrors BP shipped behaviour (HMAC, idempotency, 202/401/200).
+Local collector repo (`branchlesspay-audit-shield-Freshbook`) documents M1+M2 reference implementation.
 
 ---
 
-## FreshBooks webhook URL
+## Test proof
 
-**Production:** `https://branchlesspay.com/api/v1/webhook/freshbooks`  
-**Local dev:** `https://YOUR-NGROK.ngrok-free.app/webhook/freshbooks`
+| Field | Value |
+|-------|-------|
+| Test invoice | `0000001` |
+| Amount | $650.00 USD |
+| OAuth | `branchlesspay.com/connect/freshbooks/callback` |
+| Verify page | Amount correct, Monad TX visible |
 
 Contact: suhono@branchlesspay.com

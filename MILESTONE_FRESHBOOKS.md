@@ -2,46 +2,48 @@
 
 Repo: https://github.com/Suhono-BranchlessPay/branchlesspay-audit-shield-Freshbook  
 Branch: **`dev` only**  
-Status: **M1 + M2 complete** · BP platform webhook **SHIPPED**
+Status: **✅ COMPLETE** — production E2E verified
 
-BP production: [docs/BP_PLATFORM_SHIPPED.md](docs/BP_PLATFORM_SHIPPED.md)
+BP deploy: commit **`531bc85`** · Doc: [BP_PLATFORM_SHIPPED.md](docs/BP_PLATFORM_SHIPPED.md)
 
 ---
 
-## BP platform (SHIPPED)
+## Production (branchlesspay.com) — VERIFIED
 
 | Feature | Status |
 |---------|--------|
-| `POST /api/v1/webhook/freshbooks` | ✅ Live on branchlesspay.com |
+| Webhook receiver | ✅ |
 | HMAC verification | ✅ |
-| 4 event mapping + normalize | ✅ |
-| Idempotent anchor | ✅ |
-| HTTP 202 / bad HMAC 401 / ping 200 | ✅ |
+| 4 events (invoice create/update, payment, expense) | ✅ |
+| Amount enrichment ($0 → $650 on test invoice) | ✅ |
+| OAuth auto-refresh | ✅ |
+| Verify page correct amount | ✅ |
+| Anchored on Monad | ✅ |
+
+Test invoice: **0000001** · **$650.00 USD** · account `p7Q665`
 
 ---
 
-## Local collector (this repo)
+## Verry deliverables (this repo)
 
-| Deliverable | Status |
-|-------------|--------|
-| `POST /webhook/freshbooks` + alias `/api/v1/webhook/freshbooks` | ✅ |
-| HMAC verification | ✅ |
-| Verification ping GET/POST → 200 | ✅ |
-| Fetch + normalize + POST `/api/v1/anchor` | ✅ |
-| Idempotent anchor cache | ✅ |
-| Success response HTTP **202** | ✅ |
-| Unit tests (6+) | ✅ Python 3.12 |
-| Live E2E FreshBooks trial | ⏳ Optional — use BP production URL |
+| Item | Status |
+|------|--------|
+| M1 webhook + HMAC (`signature.py`) | ✅ |
+| M2 normalize + BP poster | ✅ |
+| OAuth scripts (`freshbooks_oauth.ps1`) | ✅ |
+| Webhook register + verifier resend scripts | ✅ |
+| Unit tests (8 passed, Python 3.12) | ✅ |
+| Docs + submission pack | ✅ |
+| FreshBooks callbacks 833466–833469 | ✅ registered |
 
 ---
 
-## Commands
+## Commands (reference)
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 $env:PYTHONPATH = "src"
 pytest tests/ -v
-python -m freshbooks_bp_collector.app
 ```
 
 Contact: suhono@branchlesspay.com

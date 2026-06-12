@@ -25,19 +25,28 @@ Edit `.env`:
 | `BP_LICENSE_KEY` | BranchlessPay test tenant |
 | `FRESHBOOKS_CLIENT_ID` | Developer app |
 | `FRESHBOOKS_CLIENT_SECRET` | Developer app |
-| `FRESHBOOKS_ACCESS_TOKEN` | OAuth flow |
-| `FRESHBOOKS_REFRESH_TOKEN` | OAuth flow |
+| `FRESHBOOKS_REDIRECT_URI` | `http://localhost:8765/oauth/callback` (register in Developer app) |
+| `FRESHBOOKS_ACCESS_TOKEN` | `scripts/freshbooks_oauth.ps1` |
+| `FRESHBOOKS_REFRESH_TOKEN` | `scripts/freshbooks_oauth.ps1` |
 | `FRESHBOOKS_WEBHOOK_VERIFIER` | Webhook callback registration |
 | `FRESHBOOKS_ACCOUNT_ID` | FreshBooks account ID |
 
-## 3. Run server
+## 3. OAuth (after Client ID + Secret in `.env`)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\freshbooks_oauth.ps1
+```
+
+Guide: [OAUTH.md](OAUTH.md)
+
+## 4. Run server
 
 ```powershell
 $env:PYTHONPATH = "src"
 python -m freshbooks_bp_collector.app
 ```
 
-## 4. Expose webhook (ngrok)
+## 5. Expose webhook (ngrok)
 
 ```powershell
 ngrok http 8080
@@ -45,14 +54,14 @@ ngrok http 8080
 
 Use the HTTPS URL + `/webhook/freshbooks` in FreshBooks webhook settings.
 
-## 5. Test flow
+## 6. Test flow
 
 1. Register webhook in FreshBooks (see WEBHOOK_SETUP.md)
 2. Create a test invoice in FreshBooks
 3. Watch server logs for `Pipeline complete verify_url=...`
 4. Open verify URL in browser
 
-## 6. Run tests
+## 7. Run tests
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\run_tests.ps1

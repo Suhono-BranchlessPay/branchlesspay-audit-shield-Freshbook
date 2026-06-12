@@ -39,7 +39,8 @@ Health check: http://127.0.0.1:8080/health
 
 Full guide: [docs/SETUP.md](docs/SETUP.md)  
 Webhook setup: [docs/WEBHOOK_SETUP.md](docs/WEBHOOK_SETUP.md)  
-**Submit to BP:** [docs/SUBMISSION_TO_BP.md](docs/SUBMISSION_TO_BP.md)
+**Submit to BP:** [docs/SUBMISSION_TO_BP.md](docs/SUBMISSION_TO_BP.md)  
+**OAuth:** [docs/OAUTH.md](docs/OAUTH.md)
 
 ---
 
