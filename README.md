@@ -5,8 +5,8 @@ Immutable audit trail for FreshBooks invoices, payments, expenses, and estimates
 | Item | Value |
 |------|-------|
 | Scope | **M1 + M2** — webhook receiver + normalize + BP anchor |
-| Endpoint | `POST /webhook/freshbooks` |
-| BP API | `POST https://branchlesspay.com/api/v1/anchor` |
+| Production webhook | `POST https://branchlesspay.com/api/v1/webhook/freshbooks` |
+| Local dev | `POST http://127.0.0.1:8080/webhook/freshbooks` |
 | Branch | **`dev` only** (private, not published) |
 
 ---
@@ -38,7 +38,8 @@ python -m freshbooks_bp_collector.app
 Health check: http://127.0.0.1:8080/health
 
 Full guide: [docs/SETUP.md](docs/SETUP.md)  
-Webhook setup: [docs/WEBHOOK_SETUP.md](docs/WEBHOOK_SETUP.md)
+Webhook setup: [docs/WEBHOOK_SETUP.md](docs/WEBHOOK_SETUP.md)  
+**Submit to BP:** [docs/SUBMISSION_TO_BP.md](docs/SUBMISSION_TO_BP.md)
 
 ---
 

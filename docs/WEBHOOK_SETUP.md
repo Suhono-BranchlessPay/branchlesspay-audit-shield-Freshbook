@@ -1,7 +1,32 @@
 # FreshBooks Webhook Setup
 
-Endpoint (local): `POST http://127.0.0.1:8080/webhook/freshbooks`  
-Production: use HTTPS via ngrok or BP-approved host.
+## Production (use this for BP go-live)
+
+| Field | Value |
+|-------|-------|
+| **URL** | `https://branchlesspay.com/api/v1/webhook/freshbooks` |
+| **Method** | POST |
+| **Events** | `invoice.create`, `invoice.update`, `payment.create`, `expense.create` |
+
+### FreshBooks UI
+
+1. https://app.freshbooks.com → **Settings** → **Integrations** → **Webhooks**
+2. Add webhook URL above
+3. Select the 4 events
+4. Copy **Webhook Verifier Key** → send to suhono@branchlesspay.com (see [SUBMISSION_TO_BP.md](SUBMISSION_TO_BP.md))
+
+### After setup — test
+
+1. Create a test invoice in FreshBooks  
+2. Confirm delivery (202) on BP side  
+3. Screenshot webhook config + test result → email suhono
+
+---
+
+## Local dev (optional)
+
+Endpoint: `POST http://127.0.0.1:8080/webhook/freshbooks`  
+Expose via ngrok — only for debugging, not production.
 
 ---
 
@@ -13,14 +38,23 @@ Production: use HTTPS via ngrok or BP-approved host.
 | `invoice.update` | `freshbooks_invoice_updated` |
 | `payment.create` | `freshbooks_payment_received` |
 | `expense.create` | `freshbooks_expense_recorded` |
-| `estimate.create` | `freshbooks_estimate_created` |
+
+Optional (local collector only): `estimate.create`
 
 ---
 
-## Register callback (FreshBooks API)
+## Signature verification
 
-1. Create OAuth app at https://my.freshbooks.com/#/developer
-2. Register webhook callback:
+Header: `X-FreshBooks-Hmac-SHA256`  
+Algorithm: HMAC-SHA256 with Webhook Verifier Key as secret.
+
+BP production server handles verification. Local implementation: `src/freshbooks_bp_collector/signature.py`.
+
+Invalid signature → **401** · Verification ping → **200** · Success anchor → **202**
+
+---
+
+## Register via API (alternative)
 
 ```bash
 curl -X POST "https://api.freshbooks.com/events/account/{account_id}/events/callbacks" \
@@ -29,66 +63,10 @@ curl -X POST "https://api.freshbooks.com/events/account/{account_id}/events/call
   -d '{
     "callback": {
       "event": "invoice.create",
-      "uri": "https://YOUR-NGROK-ID.ngrok-free.app/webhook/freshbooks"
+      "uri": "https://branchlesspay.com/api/v1/webhook/freshbooks"
     }
   }'
 ```
 
-3. FreshBooks sends a **verifier** code — save it as `FRESHBOOKS_WEBHOOK_VERIFIER` in `.env`
-4. Confirm ownership:
-
-```bash
-curl -X PUT "https://api.freshbooks.com/events/account/{account_id}/events/callbacks/{callback_id}" \
-  -H "Authorization: Bearer {access_token}" \
-  -H "Content-Type: application/json" \
-  -d '{"callback": {"verifier": "YOUR_VERIFIER_CODE"}}'
-```
-
-Repeat for each event type you need.
-
----
-
-## Signature verification
-
-FreshBooks sends header:
-
-```
-X-FreshBooks-Hmac-SHA256: <base64(HMAC-SHA256(verifier, json(form_fields)))>
-```
-
-Form body is `application/x-www-form-urlencoded`. JSON for HMAC uses **string values** and default spacing (`", "` / `": "`).
-
-Implemented in `src/freshbooks_bp_collector/signature.py`.
-
-Invalid signature → **HTTP 401** (logged, no details leaked).
-
----
-
-## FreshBooks UI (Settings)
-
-1. FreshBooks → **Settings** → **Integrations** → **Webhooks**
-2. Add webhook URL: `https://YOUR-TUNNEL/webhook/freshbooks`
-3. Select events: invoice, payment, expense, estimate
-4. Save verifier secret to `.env`
-
-**Screenshot for M1 deliverable:** capture this settings screen after setup.
-
----
-
-## Local simulation (no FreshBooks)
-
-```powershell
-$env:FRESHBOOKS_SKIP_SIGNATURE_VERIFY = "1"
-$env:PYTHONPATH = "src"
-python -m freshbooks_bp_collector.app
-```
-
-In another terminal:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\simulate_webhook.ps1
-```
-
-Note: simulation still needs mock or real FreshBooks API for full M2 fetch unless using unit tests.
-
-Docs: https://developer.freshbooks.com/docs/webhooks
+Docs: https://developer.freshbooks.com/docs/webhooks  
+Submission checklist: [SUBMISSION_TO_BP.md](SUBMISSION_TO_BP.md)
